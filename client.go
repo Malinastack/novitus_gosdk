@@ -132,11 +132,13 @@ func (n *NovitusClient) SendDocument(documentType string, document interface{}) 
 	defer client.Close()
 	var sendDocumentResponse SendDocumentResponse
 	var errorResponse ErrorResponse
+	body := make(map[string]interface{})
+	body[documentType] = document
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
 		SetHeader("Authorization", "Bearer "+n.token).
-		SetBody(document).
+		SetBody(body).
 		Post(n.host + "/api/v1/" + documentType)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send document: %w", err)
