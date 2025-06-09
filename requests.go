@@ -36,10 +36,10 @@ type DeviceControl struct {
 }
 
 type Receipt struct {
-	Items         []struct{} `json:"items"`
-	Payments      []struct{} `json:"payments"`
-	Summary       `json:"summary"`
-	PrintoutLines []struct{} `json:"printout_lines"`
+	Items         []struct{}       `json:"items"` // Required: true
+	Payments      []struct{}       `json:"payments"`
+	Summary       `json:"summary"` // Required: true
+	PrintoutLines []struct{}       `json:"printout_lines"`
 	Buyer         `json:"buyer"`
 	SystemInfo    `json:"system_info"`
 	DeviceControl `json:"device_control"`
@@ -88,14 +88,14 @@ type AdditionalInfo struct {
 }
 
 type Invoice struct {
-	Info           `json:"info"`
-	Buyer          `json:"buyer"`
+	Info           `json:"info"`   // Required: true
+	Buyer          `json:"buyer"`  // Required: true
 	Recipient      TransactionSide `json:"recipient"`
 	Seller         TransactionSide `json:"seller"`
 	Options        `json:"options"`
-	Items          []struct{} `json:"items"`
-	Payments       []struct{} `json:"payments"`
-	Summary        `json:"summary"`
+	Items          []struct{}       `json:"items"` // Required: true
+	Payments       []struct{}       `json:"payments"`
+	Summary        `json:"summary"` // Required: true
 	PrintoutLines  []struct{}       `json:"printout_lines"`
 	AdditionalInfo []AdditionalInfo `json:"additional_info"`
 	DeviceControl  `json:"device_control"`
@@ -111,7 +111,7 @@ type PrintoutOptions struct {
 
 type Printout struct {
 	Options       PrintoutOptions `json:"options"`
-	Lines         []string        `json:"lines"`
+	Lines         []string        `json:"lines"` // Required: true
 	EDocument     `json:"e_document"`
 	SystemInfo    `json:"system_info"`
 	DeviceControl `json:"device_control"`
