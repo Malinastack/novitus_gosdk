@@ -36,10 +36,10 @@ type DeviceControl struct {
 }
 
 type Receipt struct {
-	Items         []struct{}       `json:"items"` // Required: true
-	Payments      []struct{}       `json:"payments"`
+	Items         []interface{}    `json:"items"` // Required: true
+	Payments      []interface{}    `json:"payments"`
 	Summary       `json:"summary"` // Required: true
-	PrintoutLines []struct{}       `json:"printout_lines"`
+	PrintoutLines []interface{}    `json:"printout_lines"`
 	Buyer         `json:"buyer"`
 	SystemInfo    `json:"system_info"`
 	DeviceControl `json:"device_control"`
@@ -93,10 +93,10 @@ type Invoice struct {
 	Recipient      TransactionSide `json:"recipient"`
 	Seller         TransactionSide `json:"seller"`
 	Options        `json:"options"`
-	Items          []struct{}       `json:"items"` // Required: true
-	Payments       []struct{}       `json:"payments"`
+	Items          []interface{}    `json:"items"` // Required: true
+	Payments       []interface{}    `json:"payments"`
 	Summary        `json:"summary"` // Required: true
-	PrintoutLines  []struct{}       `json:"printout_lines"`
+	PrintoutLines  []interface{}    `json:"printout_lines"`
 	AdditionalInfo []AdditionalInfo `json:"additional_info"`
 	DeviceControl  `json:"device_control"`
 	SystemInfo     `json:"system_info"`
@@ -115,4 +115,82 @@ type Printout struct {
 	EDocument     `json:"e_document"`
 	SystemInfo    `json:"system_info"`
 	DeviceControl `json:"device_control"`
+}
+
+// Items
+
+type Article struct {
+	Name           string `json:"name"`            // Required: true
+	PTU            string `json:"ptu"`             // Enum: "A" - "G" Required: true
+	Quantity       string `json:"quantity"`        // Quantity in units, e.g. "1.00" Required: true
+	Price          string `json:"price"`           // Price in currency, e.g. "1.00" Required: true
+	Value          string `json:"value"`           // Total value for the item, e.g. "1.00" Required: true
+	Unit           string `json:"unit"`            // Enum: "szt" - "kg", etc.
+	DiscountMarkup string `json:"discount_markup"` // Optional, e.g. "0.00"
+	Code           string `json:"code"`            // Optional, e.g. "1234567890123" Can be set only if Description is not Set
+	Description    string `json:"description"`     // Optional, e.g. "Sample Item"
+}
+
+type Advance struct {
+	Description string `json:"description"` // Required: true, e.g. "Advance Payment"
+	PTU         string `json:"ptu"`         // Enum: "A" - "G" Required: true
+	Value       string `json:"value"`       // Value in currency, e.g. "100.00" Required: true
+}
+
+type AdvanceReturn struct {
+	Description string `json:"description"` // Required: true, e.g. "Advance Return"
+	PTU         string `json:"ptu"`         // Enum: "A" - "G" Required: true
+	Value       string `json:"value"`       // Value in currency, e.g. "50.00" Required: true
+}
+
+type Container struct {
+	Name     string `json:"name"`     // e.g. "Container Name"
+	Number   string `json:"number"`   // e.g. "12345"
+	Quantity string `json:"quantity"` // Quantity in units, e.g. "10.00"
+	Value    string `json:"value"`    // Total value for the container, e.g. "100.00" Required: true
+}
+
+type ContainerReturn struct {
+	Name     string `json:"name"`     // e.g. "Container Name"
+	Number   string `json:"number"`   // e.g. "12345"
+	Quantity string `json:"quantity"` // Quantity in units, e.g. "10.00"
+	Value    string `json:"value"`    // Total value for the container, e.g. "100.00" Required: true
+}
+
+// Payments
+
+type Cash struct {
+	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
+}
+
+type TypicalPaymentMethod struct {
+	Name  string `json:"name"`  // enum "card", cheque, coupon, other, credit, account, transfer, mobile, voucher
+	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
+}
+
+type Currency struct {
+	Course        string `json:"course"`         // e.g. "1.00" Required: true
+	CurrencyValue string `json:"currency_value"` // e.g. "USD" Required: true
+	LocalValue    string `json:"local_value"`    // e.g. "100.00" Required: true
+	IsChange      bool   `json:"is_change"`      // true if this is a change, false otherwise Required: true
+	Name          string `json:"name"`           // e.g. "USD" Required: true
+}
+
+// Printout Lines
+
+type PrintoutLine struct {
+	Text   string `json:"text"`   // The text to be printed, e.g. "Sample Text" Required: true
+	Masked bool   `json:"masked"` // true if the text should be masked, false otherwise Required: true
+}
+
+type TextLine struct {
+	Bold       bool   `json:"bold"`        // true if the text should be bold, false otherwise
+	Invers     bool   `json:"invers"`      // true if the text should be inverted, false otherwise
+	Center     bool   `json:"center"`      // true if the text should be centered, false otherwise
+	FontNumber int    `json:"font_number"` // Font number, e.g. 1, 2, 3
+	Big        bool   `json:"big"`         // true if the text should be big, false otherwise
+	Height     int    `json:"height"`      // Height of the text in points, e.g. 12
+	Width      int    `json:"width"`       // Width of the text in points, e.g. 100
+	Text       string `json:"text"`        // The text to be printed, e.g. "Sample Text" Required: true
+	Masked     bool   `json:"masked"`      // true if the text should be masked, false otherwise Required: true
 }
