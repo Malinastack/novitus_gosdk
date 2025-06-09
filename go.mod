@@ -1,4 +1,4 @@
-module novitus-gosdk
+module github.com/Hkozacz/novitus_gosdk
 
 go 1.24
 
