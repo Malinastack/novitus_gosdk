@@ -3,15 +3,19 @@ package novitus_gosdk
 import (
 	"fmt"
 	"resty.dev/v3"
+	"time"
 )
 
 type NovitusClient struct {
-	host  string
-	token string
+	host                string
+	token               string
+	tokenExpirationDate int64
 }
 
 func NewNovitusClient(host, token string) (*NovitusClient, error) {
-	client := &NovitusClient{host: host}
+	client := &NovitusClient{
+		host: host,
+	}
 	if token != "" {
 		client.token = token
 		return client, nil
@@ -36,6 +40,11 @@ func (n *NovitusClient) ObtainToken() (TokenResponse, error) {
 	if res.IsError() {
 		return TokenResponse{}, fmt.Errorf("error obtaining token: %s", errorResponse.Exception.Description)
 	}
+	t, err := time.Parse(time.RFC3339, tokenResponse.ExpirationDate)
+	if err != nil {
+		return TokenResponse{}, fmt.Errorf("Failed to parse expiration date", err)
+	}
+	n.tokenExpirationDate = t.Unix()
 	return tokenResponse, nil
 }
 
@@ -54,12 +63,36 @@ func (n *NovitusClient) RefreshToken() error {
 		return fmt.Errorf("error refreshing token: %s", errorResponse.Exception.Description)
 	}
 	n.token = tokenResponse.Token
+	t, err := time.Parse(time.RFC3339, tokenResponse.ExpirationDate)
+	if err != nil {
+		return fmt.Errorf("failed to parse expiration date: %w", err)
+	}
+	n.tokenExpirationDate = t.Unix()
 	return nil
 
 }
 
+func (n *NovitusClient) RefreshIfNeeded() error {
+	if n.token == "" {
+		_, err := n.ObtainToken()
+		return err
+	}
+	currentTime := time.Now().Unix()
+	if currentTime >= n.tokenExpirationDate {
+		err := n.RefreshToken()
+		if err != nil {
+			_, err := n.ObtainToken()
+			return err
+		}
+	}
+	if n.tokenExpirationDate-currentTime < 300 { // Refresh if less than 5 minutes left
+		return n.RefreshToken()
+	}
+	return nil
+}
+
 func (n *NovitusClient) GetQueueStatus() (QueueResponse, error) {
-	err := n.RefreshToken()
+	err := n.RefreshIfNeeded()
 	if err != nil {
 		return QueueResponse{}, fmt.Errorf("failed to refresh token before getting queue status: %w", err)
 	}
@@ -80,7 +113,7 @@ func (n *NovitusClient) GetQueueStatus() (QueueResponse, error) {
 }
 
 func (n *NovitusClient) DeleteQueue() (DeleteQueueResponse, error) {
-	err := n.RefreshToken()
+	err := n.RefreshIfNeeded()
 	if err != nil {
 		return DeleteQueueResponse{}, fmt.Errorf("failed to refresh token before getting queue status: %w", err)
 	}
@@ -101,7 +134,7 @@ func (n *NovitusClient) DeleteQueue() (DeleteQueueResponse, error) {
 }
 
 func (n *NovitusClient) Confirm(objectType, requestId string) (SendDocumentResponse, error) {
-	err := n.RefreshToken()
+	err := n.RefreshIfNeeded()
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to refresh token before confirming document: %w", err)
 	}
@@ -128,7 +161,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("Validation Error: %w", err)
 	}
-	err = n.RefreshToken()
+	err = n.RefreshIfNeeded()
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to refresh token before sending document: %w", err)
 	}
@@ -154,7 +187,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 }
 
 func (n *NovitusClient) CheckDocumentStatus(objectType, requestId string) (CheckDocumentStatusResponse, error) {
-	err := n.RefreshToken()
+	err := n.RefreshIfNeeded()
 	if err != nil {
 		return CheckDocumentStatusResponse{}, fmt.Errorf("failed to refresh token before checking document status: %w", err)
 	}
@@ -177,7 +210,7 @@ func (n *NovitusClient) CheckDocumentStatus(objectType, requestId string) (Check
 }
 
 func (n *NovitusClient) DeleteDocument(objectType, requestId string) (DeleteDocumentResponse, error) {
-	err := n.RefreshToken()
+	err := n.RefreshIfNeeded()
 	if err != nil {
 		return DeleteDocumentResponse{}, fmt.Errorf("failed to refresh token before deleting document: %w", err)
 	}
