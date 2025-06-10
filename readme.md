@@ -105,6 +105,19 @@ nfPrintout := novitus_gosdk.NFPrintout{
 sendNFPrintoutResponse, err := client.SendNFPrintout(nfPrintout, true)
 ```
 
+## Validation of inputs
+The SDK provides validation for the inputs of the `SendReceipt`, `SendInvoice`, and `SendNFPrintout` methods. If the input is invalid, an error will be returned.
+You can also use the `Validate` method on the structs to validate them before sending them to the API.
+```go
+receipt := novitus_gosdk.Receipt{
+    // fill in the receipt details
+}
+err := receipt.Validate()
+if err != nil {
+    // handle validation error
+}
+```
+
 
 ## Structs
 

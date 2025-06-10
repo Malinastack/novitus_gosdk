@@ -123,8 +123,12 @@ func (n *NovitusClient) Confirm(objectType, requestId string) (SendDocumentRespo
 	return confirmResponse, nil
 }
 
-func (n *NovitusClient) SendDocument(documentType string, document interface{}) (SendDocumentResponse, error) {
-	err := n.RefreshToken()
+func (n *NovitusClient) SendDocument(documentType string, document Document) (SendDocumentResponse, error) {
+	err := document.Validate()
+	if err != nil {
+		return SendDocumentResponse{}, fmt.Errorf("Validation Error: %w", err)
+	}
+	err = n.RefreshToken()
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to refresh token before sending document: %w", err)
 	}
@@ -195,7 +199,7 @@ func (n *NovitusClient) DeleteDocument(objectType, requestId string) (DeleteDocu
 	return deleteDocumentResponse, nil
 }
 
-func (n *NovitusClient) SendReceipt(receipt Receipt, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendReceipt(receipt *Receipt, confirm bool) (SendDocumentResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("receipt", receipt)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send receipt: %w", err)
@@ -210,7 +214,7 @@ func (n *NovitusClient) SendReceipt(receipt Receipt, confirm bool) (SendDocument
 	return sendDocumentResponse, nil
 }
 
-func (n *NovitusClient) SendInvoice(invoice Invoice, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendInvoice(invoice *Invoice, confirm bool) (SendDocumentResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("invoice", invoice)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send invoice: %w", err)
@@ -225,7 +229,7 @@ func (n *NovitusClient) SendInvoice(invoice Invoice, confirm bool) (SendDocument
 	return sendDocumentResponse, nil
 }
 
-func (n *NovitusClient) SendNFPrintout(printout Printout, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendNFPrintout(printout *Printout, confirm bool) (SendDocumentResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("nf_printout", printout)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send printout: %w", err)

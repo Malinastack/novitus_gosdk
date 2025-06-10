@@ -1,62 +1,85 @@
 package novitus_gosdk
 
+import "fmt"
+
+type Document interface {
+	Validate() error
+}
+
 type Summary struct {
-	DiscountMarkup string `json:"discount_markup"`
-	Total          string `json:"total"`
-	PayIn          string `json:"pay_in"`
-	Change         string `json:"change"`
+	DiscountMarkup string `json:"discount_markup,omitempty"`
+	Total          string `json:"total,omitempty"`
+	PayIn          string `json:"pay_in,omitempty"`
+	Change         string `json:"change,omitempty"`
 }
 
 type EDocument struct {
-	TransactionId string `json:"transaction_id"`
-	Protocol      string `json:"protocol"`
-	PrintSendMode string `json:"print_send_mode"`
+	TransactionId string `json:"transaction_id,omitempty"`
+	Protocol      string `json:"protocol,omitempty"`
+	PrintSendMode string `json:"print_send_mode,omitempty"`
 }
 
 type Buyer struct {
-	Name      string   `json:"name"`
-	IdType    string   `json:"id_type"`
-	Id        string   `json:"id"`
-	LabelType string   `json:"label_type"`
-	Address   []string `json:"address"`
-	Nip       string   `json:"nip"`
-	EDocument `json:"e_document"`
+	Name      string   `json:"name,omitempty"`
+	IdType    string   `json:"id_type,omitempty"`
+	Id        string   `json:"id,omitempty"`
+	LabelType string   `json:"label_type,omitempty"`
+	Address   []string `json:"address,omitempty"`
+	Nip       string   `json:"nip,omitempty"`
+	EDocument `json:"e_document,omitempty"`
 }
 
 type SystemInfo struct {
-	CashierName  string `json:"cashier_name"`
-	CashNumer    string `json:"cash_number"`
-	SystemNumber string `json:"system_number"`
+	CashierName  string `json:"cashier_name,omitempty"`
+	CashNumer    string `json:"cash_number,omitempty"`
+	SystemNumber string `json:"system_number,omitempty"`
 }
 
 type DeviceControl struct {
-	OpenDrawer        bool   `json:"open_drawer"`
-	FeedAfterPrintout bool   `json:"feed_after_printout"`
-	PaperCut          string `json:"paper_cut"`
+	OpenDrawer        bool   `json:"open_drawer,omitempty"`
+	FeedAfterPrintout bool   `json:"feed_after_printout,omitempty"`
+	PaperCut          string `json:"paper_cut,omitempty"`
 }
 
 type Receipt struct {
-	Items         []interface{}    `json:"items"` // Required: true
-	Payments      []interface{}    `json:"payments"`
-	Summary       `json:"summary"` // Required: true
-	PrintoutLines []interface{}    `json:"printout_lines"`
-	Buyer         `json:"buyer"`
-	SystemInfo    `json:"system_info"`
-	DeviceControl `json:"device_control"`
+	Items         []interface{}              `json:"items,omitempty"` // Required: true
+	Payments      []interface{}              `json:"payments,omitempty"`
+	Summary       `json:"summary,omitempty"` // Required: true
+	PrintoutLines []interface{}              `json:"printout_lines,omitempty"`
+	Buyer         `json:"buye,omitemptyr"`
+	SystemInfo    `json:"system_info,omitempty"`
+	DeviceControl `json:"device_control,omitempty"`
+}
+
+func (r *Receipt) Validate() error {
+	if len(r.Items) == 0 {
+		return fmt.Errorf("items are required")
+	}
+	if r.Summary.Total == "" {
+		return fmt.Errorf("summary.total is required")
+	}
+	return nil
 }
 
 type Info struct {
-	Number        string `json:"number"`
-	CopyCount     int    `json:"copy_count"`
-	DateOfSell    string `json:"date_of_sell"`
-	DateOfPayment string `json:"date_of_payment"`
-	PaymentForm   string `json:"payment_form"`
-	Paid          string `json:"paid"`
+	Number        string `json:"number,omitempty"`
+	CopyCount     int    `json:"copy_count,omitempty"`
+	DateOfSell    string `json:"date_of_sell,omitempty"`
+	DateOfPayment string `json:"date_of_payment,omitempty"`
+	PaymentForm   string `json:"payment_form,omitempty"`
+	Paid          string `json:"paid,omitempty"`
 }
 
 type TransactionSide struct {
-	Name      string `json:"name"`
-	PrintInfo string `json:"print_info"` // Enum: "place_for_signature" "name_and_place_for_signature" "none"
+	Name      string `json:"name,omitempty"`
+	PrintInfo string `json:"print_info,omitempty"` // Enum: "place_for_signature" "name_and_place_for_signature" "none"
+}
+
+func (ts *TransactionSide) Validate() error {
+	if ts.PrintInfo != "" && ts.PrintInfo != "place_for_signature" && ts.PrintInfo != "name_and_place_for_signature" && ts.PrintInfo != "none" {
+		return fmt.Errorf("print_info must be one of: place_for_signature, name_and_place_for_signature, none")
+	}
+	return nil
 }
 
 type Options struct {
@@ -82,72 +105,150 @@ type Options struct {
 }
 
 type AdditionalInfo struct {
-	Text          string `json:"text"`
-	Bold          bool   `json:"bold"`
-	Justification string `json:"justification"` // Enum: "left" "center" "right"
+	Text          string `json:"text,omitempty"`
+	Bold          bool   `json:"bold,omitempty"`
+	Justification string `json:"justification,omitempty"` // Enum: "left" "center" "right"
 }
 
 type Invoice struct {
 	Info           `json:"info"`   // Required: true
 	Buyer          `json:"buyer"`  // Required: true
-	Recipient      TransactionSide `json:"recipient"`
-	Seller         TransactionSide `json:"seller"`
+	Recipient      TransactionSide `json:"recipient,omitempty"`
+	Seller         TransactionSide `json:"seller,omitempty"`
 	Options        `json:"options"`
 	Items          []interface{}    `json:"items"` // Required: true
-	Payments       []interface{}    `json:"payments"`
+	Payments       []interface{}    `json:"payments,omitempty"`
 	Summary        `json:"summary"` // Required: true
-	PrintoutLines  []interface{}    `json:"printout_lines"`
-	AdditionalInfo []AdditionalInfo `json:"additional_info"`
-	DeviceControl  `json:"device_control"`
-	SystemInfo     `json:"system_info"`
+	PrintoutLines  []interface{}    `json:"printout_lines,omitempty"`
+	AdditionalInfo []AdditionalInfo `json:"additional_info,omitempty"`
+	DeviceControl  `json:"device_control,omitempty"`
+	SystemInfo     `json:"system_info,omitempty"`
+}
+
+func (i *Invoice) Validate() error {
+	if i.Info.Number == "" {
+		return fmt.Errorf("info.number is required")
+	}
+	if len(i.Items) == 0 {
+		return fmt.Errorf("items are required")
+	}
+	if i.Summary.Total == "" {
+		return fmt.Errorf("summary.total is required")
+	}
+	if i.Buyer.Name == "" && i.Buyer.Nip == "" {
+		return fmt.Errorf("buyer.name or buyer.nip is required")
+	}
+	return nil
 }
 
 type PrintoutOptions struct {
-	WithoutHeader    bool `json:"without_header"`
-	LeftMargin       bool `json:"left_margin"`
-	CopyOnly         bool `json:"copy_only"`
-	FiscalMarginsOff bool `json:"fiscal_margins_off"`
+	WithoutHeader    bool `json:"without_header,omitempty"`
+	LeftMargin       bool `json:"left_margin,omitempty"`
+	CopyOnly         bool `json:"copy_only,omitempty"`
+	FiscalMarginsOff bool `json:"fiscal_margins_off,omitempty"`
 }
 
 type Printout struct {
-	Options       PrintoutOptions `json:"options"`
+	Options       PrintoutOptions `json:"options,omitempty"`
 	Lines         []string        `json:"lines"` // Required: true
-	EDocument     `json:"e_document"`
-	SystemInfo    `json:"system_info"`
-	DeviceControl `json:"device_control"`
+	EDocument     `json:"e_document,omitempty"`
+	SystemInfo    `json:"system_info,omitempty"`
+	DeviceControl `json:"device_control,omitempty"`
+}
+
+func (p *Printout) Validate() error {
+	if len(p.Lines) == 0 {
+		return fmt.Errorf("lines are required")
+	}
+	return nil
 }
 
 // Items
 
 type Article struct {
-	Name           string `json:"name"`            // Required: true
-	PTU            string `json:"ptu"`             // Enum: "A" - "G" Required: true
-	Quantity       string `json:"quantity"`        // Quantity in units, e.g. "1.00" Required: true
-	Price          string `json:"price"`           // Price in currency, e.g. "1.00" Required: true
-	Value          string `json:"value"`           // Total value for the item, e.g. "1.00" Required: true
-	Unit           string `json:"unit"`            // Enum: "szt" - "kg", etc.
-	DiscountMarkup string `json:"discount_markup"` // Optional, e.g. "0.00"
-	Code           string `json:"code"`            // Optional, e.g. "1234567890123" Can be set only if Description is not Set
-	Description    string `json:"description"`     // Optional, e.g. "Sample Item"
+	Name           string `json:"name"`                      // Required: true
+	PTU            string `json:"ptu"`                       // Enum: "A" - "G" Required: true
+	Quantity       string `json:"quantity"`                  // Quantity in units, e.g. "1.00" Required: true
+	Price          string `json:"price"`                     // Price in currency, e.g. "1.00" Required: true
+	Value          string `json:"value"`                     // Total value for the item, e.g. "1.00" Required: true
+	Unit           string `json:"unit,omitempty"`            // Enum: "szt" - "kg", etc.
+	DiscountMarkup string `json:"discount_markup,omitempty"` // Optional, e.g. "0.00"
+	Code           string `json:"code,omitempty"`            // Optional, e.g. "1234567890123" Can be set only if Description is not Set
+	Description    string `json:"description,omitempty"`     // Optional, e.g. "Sample Item"
+}
+
+func (a *Article) Validate() error {
+	if a.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if a.PTU != "A" && a.PTU != "B" && a.PTU != "C" && a.PTU != "D" && a.PTU != "E" && a.PTU != "F" && a.PTU != "G" {
+		return fmt.Errorf("ptu must be one of: A, B, C, D, E, F, G")
+	}
+	if a.Quantity == "" {
+		return fmt.Errorf("quantity is required")
+	}
+	if a.Price == "" {
+		return fmt.Errorf("price is required")
+	}
+	if a.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	if a.Unit != "" && a.Unit != "szt" && a.Unit != "kg" {
+		return fmt.Errorf("unit must be one of: szt, kg, etc.")
+	}
+	return nil
 }
 
 type Advance struct {
-	Description string `json:"description"` // Required: true, e.g. "Advance Payment"
-	PTU         string `json:"ptu"`         // Enum: "A" - "G" Required: true
-	Value       string `json:"value"`       // Value in currency, e.g. "100.00" Required: true
+	Description string `json:"description,omitempty"` // Required: true, e.g. "Advance Payment"
+	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true
+	Value       string `json:"value"`                 // Value in currency, e.g. "100.00" Required: true
+}
+
+func (a *Advance) Validate() error {
+	if a.Description == "" {
+		return fmt.Errorf("description is required")
+	}
+	if a.PTU != "A" && a.PTU != "B" && a.PTU != "C" && a.PTU != "D" && a.PTU != "E" && a.PTU != "F" && a.PTU != "G" {
+		return fmt.Errorf("ptu must be one of: A, B, C, D, E, F, G")
+	}
+	if a.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
 }
 
 type AdvanceReturn struct {
-	Description string `json:"description"` // Required: true, e.g. "Advance Return"
-	PTU         string `json:"ptu"`         // Enum: "A" - "G" Required: true
-	Value       string `json:"value"`       // Value in currency, e.g. "50.00" Required: true
+	Description string `json:"description,omitempty"` // Required: true, e.g. "Advance Return"
+	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true
+	Value       string `json:"value"`                 // Value in currency, e.g. "50.00" Required: true
+}
+
+func (a *AdvanceReturn) Validate() error {
+	if a.Description == "" {
+		return fmt.Errorf("description is required")
+	}
+	if a.PTU != "A" && a.PTU != "B" && a.PTU != "C" && a.PTU != "D" && a.PTU != "E" && a.PTU != "F" && a.PTU != "G" {
+		return fmt.Errorf("ptu must be one of: A, B, C, D, E, F, G")
+	}
+	if a.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
 }
 
 type Container struct {
-	Name     string `json:"name"`     // e.g. "Container Name"
-	Number   string `json:"number"`   // e.g. "12345"
-	Quantity string `json:"quantity"` // Quantity in units, e.g. "10.00"
-	Value    string `json:"value"`    // Total value for the container, e.g. "100.00" Required: true
+	Name     string `json:"name,omitempty"`     // e.g. "Container Name"
+	Number   string `json:"number,omitempty"`   // e.g. "12345"
+	Quantity string `json:"quantity,omitempty"` // Quantity in units, e.g. "10.00"
+	Value    string `json:"value"`              // Total value for the container, e.g. "100.00" Required: true
+}
+
+func (c *Container) Validate() error {
+	if c.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
 }
 
 type ContainerReturn struct {
@@ -157,15 +258,39 @@ type ContainerReturn struct {
 	Value    string `json:"value"`    // Total value for the container, e.g. "100.00" Required: true
 }
 
+func (cr *ContainerReturn) Validate() error {
+	if cr.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
+}
+
 // Payments
 
 type Cash struct {
 	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
 }
 
+func (c *Cash) Validate() error {
+	if c.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
+}
+
 type TypicalPaymentMethod struct {
-	Name  string `json:"name"`  // enum "card", cheque, coupon, other, credit, account, transfer, mobile, voucher
-	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
+	Name  string `json:"name,omitempty"` // enum "card", cheque, coupon, other, credit, account, transfer, mobile, voucher
+	Value string `json:"value"`          // Value in currency, e.g. "100.00" Required: true
+}
+
+func (t *TypicalPaymentMethod) Validate() error {
+	if t.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	if t.Name != "card" && t.Name != "cheque" && t.Name != "coupon" && t.Name != "other" && t.Name != "credit" && t.Name != "account" && t.Name != "transfer" && t.Name != "mobile" && t.Name != "voucher" {
+		return fmt.Errorf("name must be one of: card, cheque, coupon, other, credit, account, transfer, mobile, voucher")
+	}
+	return nil
 }
 
 type Currency struct {
@@ -176,6 +301,22 @@ type Currency struct {
 	Name          string `json:"name"`           // e.g. "USD" Required: true
 }
 
+func (c *Currency) Validate() error {
+	if c.Course == "" {
+		return fmt.Errorf("course is required")
+	}
+	if c.CurrencyValue == "" {
+		return fmt.Errorf("currency_value is required")
+	}
+	if c.LocalValue == "" {
+		return fmt.Errorf("local_value is required")
+	}
+	if c.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	return nil
+}
+
 // Printout Lines
 
 type PrintoutLine struct {
@@ -183,14 +324,37 @@ type PrintoutLine struct {
 	Masked bool   `json:"masked"` // true if the text should be masked, false otherwise Required: true
 }
 
+func (p *PrintoutLine) Validate() error {
+	if p.Text == "" {
+		return fmt.Errorf("text is required")
+	}
+	return nil
+}
+
 type TextLine struct {
-	Bold       bool   `json:"bold"`        // true if the text should be bold, false otherwise
-	Invers     bool   `json:"invers"`      // true if the text should be inverted, false otherwise
-	Center     bool   `json:"center"`      // true if the text should be centered, false otherwise
-	FontNumber int    `json:"font_number"` // Font number, e.g. 1, 2, 3
-	Big        bool   `json:"big"`         // true if the text should be big, false otherwise
-	Height     int    `json:"height"`      // Height of the text in points, e.g. 12
-	Width      int    `json:"width"`       // Width of the text in points, e.g. 100
-	Text       string `json:"text"`        // The text to be printed, e.g. "Sample Text" Required: true
-	Masked     bool   `json:"masked"`      // true if the text should be masked, false otherwise Required: true
+	Bold       bool   `json:"bold,omitempty"`        // true if the text should be bold, false otherwise
+	Invers     bool   `json:"invers,omitempty"`      // true if the text should be inverted, false otherwise
+	Center     bool   `json:"center,omitempty"`      // true if the text should be centered, false otherwise
+	FontNumber int    `json:"font_number,omitempty"` // Font number, e.g. 1, 2, 3
+	Big        bool   `json:"big,omitempty"`         // true if the text should be big, false otherwise
+	Height     int    `json:"height,omitempty"`      // Height of the text in points, e.g. 12
+	Width      int    `json:"width,omitempty"`       // Width of the text in points, e.g. 100
+	Text       string `json:"text"`                  // The text to be printed, e.g. "Sample Text" Required: true
+	Masked     bool   `json:"masked"`                // true if the text should be masked, false otherwise Required: true
+}
+
+func (tl *TextLine) Validate() error {
+	if tl.Text == "" {
+		return fmt.Errorf("text is required")
+	}
+	if tl.Height < 0 {
+		return fmt.Errorf("height must be a positive integer")
+	}
+	if tl.Width < 0 {
+		return fmt.Errorf("width must be a positive integer")
+	}
+	if tl.FontNumber < 1 || tl.FontNumber > 3 {
+		return fmt.Errorf("font_number must be between 1 and 3")
+	}
+	return nil
 }
