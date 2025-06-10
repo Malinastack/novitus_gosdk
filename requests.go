@@ -46,9 +46,9 @@ type Receipt struct {
 	Payments      []interface{}              `json:"payments,omitempty"`
 	Summary       `json:"summary,omitempty"` // Required: true
 	PrintoutLines []interface{}              `json:"printout_lines,omitempty"`
-	Buyer         `json:"buyer,omitempty"`
-	SystemInfo    `json:"system_info,omitempty"`
-	DeviceControl `json:"device_control,omitempty"`
+	Buyer         *Buyer                     `json:"buyer,omitempty"`
+	SystemInfo    *SystemInfo                `json:"system_info,omitempty"`
+	DeviceControl *DeviceControl             `json:"device_control,omitempty"`
 }
 
 func (r *Receipt) Validate() error {
@@ -111,10 +111,10 @@ type AdditionalInfo struct {
 }
 
 type Invoice struct {
-	Info           `json:"info"`   // Required: true
-	Buyer          `json:"buyer"`  // Required: true
-	Recipient      TransactionSide `json:"recipient,omitempty"`
-	Seller         TransactionSide `json:"seller,omitempty"`
+	Info           `json:"info"`    // Required: true
+	Buyer          `json:"buyer"`   // Required: true
+	Recipient      *TransactionSide `json:"recipient,omitempty"`
+	Seller         *TransactionSide `json:"seller,omitempty"`
 	Options        `json:"options"`
 	Items          []interface{}    `json:"items"` // Required: true
 	Payments       []interface{}    `json:"payments,omitempty"`
@@ -149,8 +149,8 @@ type PrintoutOptions struct {
 }
 
 type Printout struct {
-	Options       PrintoutOptions `json:"options,omitempty"`
-	Lines         []string        `json:"lines"` // Required: true
+	Options       *PrintoutOptions `json:"options,omitempty"`
+	Lines         []string         `json:"lines"` // Required: true
 	EDocument     `json:"e_document,omitempty"`
 	SystemInfo    `json:"system_info,omitempty"`
 	DeviceControl `json:"device_control,omitempty"`
