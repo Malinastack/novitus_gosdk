@@ -1,6 +1,9 @@
 package novitus_gosdk
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/shopspring/decimal"
+)
 
 type Document interface {
 	Validate() error
@@ -167,7 +170,7 @@ func (p *Printout) Validate() error {
 
 type Article struct {
 	Name           string `json:"name"`                      // Required: true
-	PTU            string `json:"ptu"`                       // Enum: "A" - "G" Required: true
+	PTU            string `json:"ptu"`                       // Enum: "A" - "G" Required: true https://www.posnet.com.pl/gdzie-kupic
 	Quantity       string `json:"quantity"`                  // Quantity in units, e.g. "1.00" Required: true
 	Price          string `json:"price"`                     // Price in currency, e.g. "1.00" Required: true
 	Value          string `json:"value"`                     // Total value for the item, e.g. "1.00" Required: true
@@ -196,12 +199,27 @@ func (a *Article) Validate() error {
 	if a.Unit != "" && a.Unit != "szt" && a.Unit != "kg" {
 		return fmt.Errorf("unit must be one of: szt, kg, etc.")
 	}
+	decValue, err := decimal.NewFromString(a.Value)
+	if err != nil {
+		return fmt.Errorf("invalid value format: %w", err)
+	}
+	decPrice, err := decimal.NewFromString(a.Price)
+	if err != nil {
+		return fmt.Errorf("invalid price format: %w", err)
+	}
+	decQuantity, err := decimal.NewFromString(a.Quantity)
+	if err != nil {
+		return fmt.Errorf("invalid quantity format: %w", err)
+	}
+	if decValue != decPrice.Mul(decQuantity) {
+		return fmt.Errorf("value must be equal to price multiplied by quantity")
+	}
 	return nil
 }
 
 type Advance struct {
 	Description string `json:"description,omitempty"` // Required: true, e.g. "Advance Payment"
-	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true
+	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true https://www.posnet.com.pl/gdzie-kupic
 	Value       string `json:"value"`                 // Value in currency, e.g. "100.00" Required: true
 }
 
@@ -220,7 +238,7 @@ func (a *Advance) Validate() error {
 
 type AdvanceReturn struct {
 	Description string `json:"description,omitempty"` // Required: true, e.g. "Advance Return"
-	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true
+	PTU         string `json:"ptu"`                   // Enum: "A" - "G" Required: true https://www.posnet.com.pl/gdzie-kupic
 	Value       string `json:"value"`                 // Value in currency, e.g. "50.00" Required: true
 }
 

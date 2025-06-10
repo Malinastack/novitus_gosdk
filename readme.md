@@ -4,6 +4,7 @@ This is a client SDK for the Novitus API, written in Go. It provides a simple an
 ```go get github.com/Hkozacz/novitus_gosdk```
 
 # Usage
+## Quick example
 
 ## Client creation
 To start using the Novitus client, you need to create a new client instance. You can do this by providing the base URL of the Novitus API and optionaly Bearer token.
@@ -73,7 +74,7 @@ deleteDocumentResponse, err := client.DeleteDocument("invoice", requestId)
 ```
 
 ### SendReceipt
-SendReceipt is a wrapper for the `SendDocument` method, specifically for sending receipts. It requires a `Receipt` struct as an argument and `confirm bool` and returns a `SendDocumentResponse` struct containing the status of the receipt.
+SendReceipt is a wrapper for the `SendDocument` method, specifically for sending receipts. It requires a `Receipt` struct as an argument and `confirm bool` and returns a `CheckDocumentStatusResponse` struct containing the status of the receipt.
 If `confirm` is set to true, the method will automatically confirm the receipt after sending it.
 ```go
 client, err := novitus_gosdk.NewNovitusClient("example.com", "")
@@ -84,7 +85,7 @@ sendReceiptResponse, err := client.SendReceipt(receipt, true)
 ```
 
 ### SendInvoice
-SendInvoice is a wrapper for the `SendDocument` method, specifically for sending invoices. It requires an `Invoice` struct as an argument and `confirm bool` and returns a `SendDocumentResponse` struct containing the status of the invoice.
+SendInvoice is a wrapper for the `SendDocument` method, specifically for sending invoices. It requires an `Invoice` struct as an argument and `confirm bool` and returns a `CheckDocumentStatusResponse` struct containing the status of the invoice.
 If `confirm` is set to true, the method will automatically confirm the invoice after sending it.
 ```go
 client, err := novitus_gosdk.NewNovitusClient("example.com", "")
@@ -95,7 +96,7 @@ sendInvoiceResponse, err := client.SendInvoice(invoice, true)
 ```
 
 ### SendNFPrintout
-SendNFPrintout is a wrapper for the `SendDocument` method, specifically for sending nonfiscal printouts. It requires an `NFPrintout` struct as an argument and `confirm bool` and returns a `SendDocumentResponse` struct containing the status of the NF printout.
+SendNFPrintout is a wrapper for the `SendDocument` method, specifically for sending nonfiscal printouts. It requires an `NFPrintout` struct as an argument and `confirm bool` and returns a `CheckDocumentStatusResponse` struct containing the status of the NF printout.
 If `confirm` is set to true, the method will automatically confirm the NF printout after sending it.
 ```go
 client, err := novitus_gosdk.NewNovitusClient("example.com", "")
@@ -120,7 +121,7 @@ if err != nil {
 
 
 ## Structs
-
+### Requests
 ```go
 package novitus_gosdk
 
@@ -319,4 +320,61 @@ type TextLine struct {
 	Masked     bool   `json:"masked"`      // true if the text should be masked, false otherwise Required: true
 }
 
+```
+
+### Responses
+```go
+package novitus_gosdk
+
+type Error struct {
+	Code        int    `json:"code"`
+	Description string `json:"description"`
+}
+
+type Request struct {
+	Status    string `json:"status"`
+	Id        string `json:"id"`
+	EDocument string `json:"e_document"`
+	JPKID     string `json:"jpkid"`
+	Error     `json:"error"`
+}
+
+type Device struct {
+	Status string `json:"status"`
+	Error  `json:"error"`
+}
+
+type TokenResponse struct {
+	Token          string `json:"token"`
+	ExpirationDate string `json:"expiration_date"`
+}
+
+type QueueResponse struct {
+	RequestsInQueue int `json:"requests_in_queue"`
+}
+
+type DeleteQueueResponse struct {
+	Status string `json:"status"`
+}
+
+type SendDocumentResponse struct {
+	Request `json:"request"`
+}
+
+type ConfirmDocumentResponse struct {
+	Request `json:"request"`
+}
+
+type CheckDocumentStatusResponse struct {
+	DeviceObj Device `json:"device"`
+	Request   `json:"request"`
+}
+
+type DeleteDocumentResponse struct {
+	Request `json:"request"`
+}
+
+type ErrorResponse struct {
+	Exception Error `json:"exception"`
+}
 ```

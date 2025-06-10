@@ -199,47 +199,44 @@ func (n *NovitusClient) DeleteDocument(objectType, requestId string) (DeleteDocu
 	return deleteDocumentResponse, nil
 }
 
-func (n *NovitusClient) SendReceipt(receipt *Receipt, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendReceipt(receipt *Receipt, confirm bool) (CheckDocumentStatusResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("receipt", receipt)
 	if err != nil {
-		return SendDocumentResponse{}, fmt.Errorf("failed to send receipt: %w", err)
+		return CheckDocumentStatusResponse{}, fmt.Errorf("failed to send receipt: %w", err)
 	}
 	if confirm {
-		confirmResponse, err := n.Confirm("receipt", sendDocumentResponse.Request.Id)
+		_, err := n.Confirm("receipt", sendDocumentResponse.Request.Id)
 		if err != nil {
-			return SendDocumentResponse{}, fmt.Errorf("failed to confirm document: %w", err)
+			return CheckDocumentStatusResponse{}, fmt.Errorf("failed to confirm document: %w", err)
 		}
-		return confirmResponse, nil
 	}
-	return sendDocumentResponse, nil
+	return n.CheckDocumentStatus("receipt", sendDocumentResponse.Request.Id)
 }
 
-func (n *NovitusClient) SendInvoice(invoice *Invoice, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendInvoice(invoice *Invoice, confirm bool) (CheckDocumentStatusResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("invoice", invoice)
 	if err != nil {
-		return SendDocumentResponse{}, fmt.Errorf("failed to send invoice: %w", err)
+		return CheckDocumentStatusResponse{}, fmt.Errorf("failed to send invoice: %w", err)
 	}
 	if confirm {
-		confirmResponse, err := n.Confirm("invoice", sendDocumentResponse.Request.Id)
+		_, err := n.Confirm("invoice", sendDocumentResponse.Request.Id)
 		if err != nil {
-			return SendDocumentResponse{}, fmt.Errorf("failed to confirm document: %w", err)
+			return CheckDocumentStatusResponse{}, fmt.Errorf("failed to confirm document: %w", err)
 		}
-		return confirmResponse, nil
 	}
-	return sendDocumentResponse, nil
+	return n.CheckDocumentStatus("invoice", sendDocumentResponse.Request.Id)
 }
 
-func (n *NovitusClient) SendNFPrintout(printout *Printout, confirm bool) (SendDocumentResponse, error) {
+func (n *NovitusClient) SendNFPrintout(printout *Printout, confirm bool) (CheckDocumentStatusResponse, error) {
 	sendDocumentResponse, err := n.SendDocument("nf_printout", printout)
 	if err != nil {
-		return SendDocumentResponse{}, fmt.Errorf("failed to send printout: %w", err)
+		return CheckDocumentStatusResponse{}, fmt.Errorf("failed to send printout: %w", err)
 	}
 	if confirm {
-		confirmResponse, err := n.Confirm("nf_printout", sendDocumentResponse.Request.Id)
+		_, err := n.Confirm("nf_printout", sendDocumentResponse.Request.Id)
 		if err != nil {
-			return SendDocumentResponse{}, fmt.Errorf("failed to confirm document: %w", err)
+			return CheckDocumentStatusResponse{}, fmt.Errorf("failed to confirm document: %w", err)
 		}
-		return confirmResponse, nil
 	}
-	return sendDocumentResponse, nil
+	return n.CheckDocumentStatus("nf_printout", sendDocumentResponse.Request.Id)
 }
