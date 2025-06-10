@@ -5,6 +5,62 @@ This is a client SDK for the Novitus API, written in Go. It provides a simple an
 
 # Usage
 ## Quick example
+```go
+	client, err := novitus_gosdk.NewNovitusClient("http://localhost:8888", "")
+	if err != nil {
+		fmt.Println("Error creating Novitus client:", err)
+		return
+	}
+	var items []interface{}
+	var printoutLines []interface{}
+	article := map[string]interface{}{
+		"article": novitus_gosdk.Article{
+			Name:     "Tasty Pizza with Extra Cheese",
+			PTU:      "B",
+			Quantity: "2",
+			Value:    "2.00",
+			Price:    "1.00",
+		},
+	}
+	line := map[string]interface{}{
+		"textline": novitus_gosdk.TextLine{
+			Text:   "Example text line",
+			Bold:   true,
+			Center: true,
+			Masked: false,
+		},
+	}
+
+	items = append(items, article)
+	printoutLines = append(printoutLines, line)
+	docResp, err := client.SendReceipt(
+		&novitus_gosdk.Receipt{
+			Items: items,
+			Summary: novitus_gosdk.Summary{
+				Total: "2.00",
+				PayIn: "2.00",
+			},
+			PrintoutLines: printoutLines,
+		}, false)
+	if err != nil {
+		fmt.Println("Error sending receipt:", err)
+		return
+	}
+	fmt.Println("Receipt sent successfully:", docResp.Id)
+	resp, err := client.GetQueueStatus()
+	if err != nil {
+		fmt.Println("Error getting queue status:", err)
+		return
+	}
+	fmt.Println("Requests in queue:", resp.RequestsInQueue)
+	confirmResp, err := client.Confirm("receipt", docResp.Id)
+	if err != nil {
+		fmt.Println("Error confirming receipt:", err)
+		return
+	}
+	fmt.Println("Receipt confirmed successfully:", confirmResp.Id, confirmResp.Status)
+}
+````
 
 ## Client creation
 To start using the Novitus client, you need to create a new client instance. You can do this by providing the base URL of the Novitus API and optionaly Bearer token.
