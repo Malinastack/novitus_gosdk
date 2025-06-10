@@ -46,7 +46,7 @@ type Receipt struct {
 	Payments      []interface{}              `json:"payments,omitempty"`
 	Summary       `json:"summary,omitempty"` // Required: true
 	PrintoutLines []interface{}              `json:"printout_lines,omitempty"`
-	Buyer         `json:"buye,omitemptyr"`
+	Buyer         `json:"buyer,omitempty"`
 	SystemInfo    `json:"system_info,omitempty"`
 	DeviceControl `json:"device_control,omitempty"`
 }
