@@ -170,7 +170,11 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 	var sendDocumentResponse SendDocumentResponse
 	var errorResponse ErrorResponse
 	body := make(map[string]interface{})
-	body[documentType] = document
+	if documentType == "nf_printout" {
+		body["printout"] = document
+	} else {
+		body[documentType] = document
+	}
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
