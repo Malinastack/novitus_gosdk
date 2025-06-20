@@ -177,7 +177,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 		body[documentType] = document
 	}
 	j, _ := json.Marshal(body)
-	fmt.Println(j)
+	fmt.Println(string(j))
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
