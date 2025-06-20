@@ -181,7 +181,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 		return SendDocumentResponse{}, fmt.Errorf("failed to send document: %w", err)
 	}
 	if res.IsError() {
-		return SendDocumentResponse{}, fmt.Errorf("error sending document: %s", errorResponse.Exception.Description)
+		return SendDocumentResponse{}, fmt.Errorf("error sending document: %s %s", string(rune(errorResponse.Exception.Code)), errorResponse.Exception.Description)
 	}
 	return sendDocumentResponse, nil
 }
