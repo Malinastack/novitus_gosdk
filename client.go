@@ -171,6 +171,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 	var errorResponse ErrorResponse
 	body := make(map[string]interface{})
 	body[documentType] = document
+	fmt.Println(body)
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
