@@ -9,7 +9,7 @@ type Request struct {
 	Status    string `json:"status"`
 	Id        string `json:"id"`
 	EDocument string `json:"e_document"`
-	JPKID     string `json:"jpkid"`
+	JPKID     int    `json:"jpkid"`
 	Error     `json:"error"`
 }
 
