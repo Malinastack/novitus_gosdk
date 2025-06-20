@@ -1,6 +1,7 @@
 package novitus_gosdk
 
 import (
+	"encoding/json"
 	"fmt"
 	"resty.dev/v3"
 	"time"
@@ -175,6 +176,8 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 	} else {
 		body[documentType] = document
 	}
+	j, _ := json.Marshal(body)
+	fmt.Println(j)
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
@@ -182,7 +185,6 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 		SetBody(body).
 		Post(n.host + "/api/v1/" + documentType)
 
-	fmt.Println(res.Request.Body)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send document: %w", err)
 	}
