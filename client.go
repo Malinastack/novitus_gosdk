@@ -181,6 +181,8 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 		SetHeader("Authorization", "Bearer "+n.token).
 		SetBody(body).
 		Post(n.host + "/api/v1/" + documentType)
+
+	fmt.Println(res.Request.Body)
 	if err != nil {
 		return SendDocumentResponse{}, fmt.Errorf("failed to send document: %w", err)
 	}
