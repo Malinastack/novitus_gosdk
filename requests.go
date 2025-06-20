@@ -152,11 +152,11 @@ type PrintoutOptions struct {
 }
 
 type Printout struct {
-	Options       *PrintoutOptions `json:"options,omitempty"`
-	Lines         []interface{}    `json:"lines"` // Required: true
-	EDocument     `json:"e_document,omitempty"`
-	SystemInfo    `json:"system_info,omitempty"`
-	DeviceControl `json:"device_control,omitempty"`
+	Options        *PrintoutOptions `json:"options,omitempty"`
+	Lines          []interface{}    `json:"lines"` // Required: true
+	*EDocument     `json:"e_document,omitempty"`
+	*SystemInfo    `json:"system_info,omitempty"`
+	*DeviceControl `json:"device_control,omitempty"`
 }
 
 func (p *Printout) Validate() error {
