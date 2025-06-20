@@ -1,7 +1,6 @@
 package novitus_gosdk
 
 import (
-	"encoding/json"
 	"fmt"
 	"resty.dev/v3"
 	"time"
@@ -176,8 +175,6 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 	} else {
 		body[documentType] = document
 	}
-	j, _ := json.Marshal(body)
-	fmt.Println(string(j))
 	res, err := client.R().
 		SetResult(&sendDocumentResponse).
 		SetError(&errorResponse).
