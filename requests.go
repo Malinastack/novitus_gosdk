@@ -45,8 +45,8 @@ type DeviceControl struct {
 }
 
 type Receipt struct {
-	Items         []Article                  `json:"items,omitempty"` // Required: true
-	Payments      interface{}                `json:"payments,omitempty"`
+	Items         []interface{}              `json:"items,omitempty"` // Required: true
+	Payments      []interface{}              `json:"payments,omitempty"`
 	Summary       `json:"summary,omitempty"` // Required: true
 	PrintoutLines []interface{}              `json:"printout_lines,omitempty"`
 	Buyer         *Buyer                     `json:"buyer,omitempty"`
