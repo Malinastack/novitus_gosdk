@@ -20,11 +20,10 @@ func NewNovitusClient(host, token string) (*NovitusClient, error) {
 		client.token = token
 		return client, nil
 	}
-	tokenResp, err := client.ObtainToken()
+	_, err := client.ObtainToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain token: %w", err)
 	}
-	client.token = tokenResp.Token
 	return client, nil
 }
 
@@ -45,6 +44,7 @@ func (n *NovitusClient) ObtainToken() (TokenResponse, error) {
 		return TokenResponse{}, fmt.Errorf("Failed to parse expiration date", err)
 	}
 	n.tokenExpirationDate = t.Unix()
+	n.token = tokenResponse.Token
 	return tokenResponse, nil
 }
 
