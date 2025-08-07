@@ -2,6 +2,7 @@ package novitus_gosdk
 
 import (
 	"fmt"
+
 	"github.com/shopspring/decimal"
 )
 
@@ -290,6 +291,17 @@ type Cash struct {
 }
 
 func (c *Cash) Validate() error {
+	if c.Value == "" {
+		return fmt.Errorf("value is required")
+	}
+	return nil
+}
+
+type Card struct {
+	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
+}
+
+func (c *Card) Validate() error {
 	if c.Value == "" {
 		return fmt.Errorf("value is required")
 	}
