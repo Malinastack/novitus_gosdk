@@ -303,17 +303,6 @@ func (c *Cash) Validate() error {
 	return nil
 }
 
-type Card struct {
-	Value string `json:"value"` // Value in currency, e.g. "100.00" Required: true
-}
-
-func (c *Card) Validate() error {
-	if c.Value == "" {
-		return fmt.Errorf("value is required")
-	}
-	return nil
-}
-
 type TypicalPaymentMethod struct {
 	Name  string `json:"name,omitempty"` // enum "card", cheque, coupon, other, credit, account, transfer, mobile, voucher
 	Value string `json:"value"`          // Value in currency, e.g. "100.00" Required: true
