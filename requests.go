@@ -2,6 +2,7 @@ package novitus_gosdk
 
 import (
 	"fmt"
+
 	"github.com/shopspring/decimal"
 )
 
@@ -9,8 +10,14 @@ type Document interface {
 	Validate() error
 }
 
+type DiscountMarkup struct {
+	Type  string `json:"type"` //Enum: "percent_discount" "percent_markup" "value_discount" "value_markup"
+	Name  string `json:"name,omitempty"`
+	Value string `json:"value"`
+}
+
 type Summary struct {
-	DiscountMarkup string `json:"discount_markup,omitempty"`
+	DiscountMarkup `json:"discount_markup,omitempty"`
 	Total          string `json:"total,omitempty"`
 	PayIn          string `json:"pay_in,omitempty"`
 	Change         string `json:"change,omitempty"`
@@ -169,15 +176,15 @@ func (p *Printout) Validate() error {
 // Items
 
 type Article struct {
-	Name           string `json:"name"`                      // Required: true
-	PTU            string `json:"ptu"`                       // Enum: "A" - "G" Required: true https://www.posnet.com.pl/gdzie-kupic
-	Quantity       string `json:"quantity"`                  // Quantity in units, e.g. "1.00" Required: true
-	Price          string `json:"price"`                     // Price in currency, e.g. "1.00" Required: true
-	Value          string `json:"value"`                     // Total value for the item, e.g. "1.00" Required: true
-	Unit           string `json:"unit,omitempty"`            // Enum: "szt" - "kg", etc.
-	DiscountMarkup string `json:"discount_markup,omitempty"` // Optional, e.g. "0.00"
-	Code           string `json:"code,omitempty"`            // Optional, e.g. "1234567890123" Can be set only if Description is not Set
-	Description    string `json:"description,omitempty"`     // Optional, e.g. "Sample Item"
+	Name           string         `json:"name"`                      // Required: true
+	PTU            string         `json:"ptu"`                       // Enum: "A" - "G" Required: true https://www.posnet.com.pl/gdzie-kupic
+	Quantity       string         `json:"quantity"`                  // Quantity in units, e.g. "1.00" Required: true
+	Price          string         `json:"price"`                     // Price in currency, e.g. "1.00" Required: true
+	Value          string         `json:"value"`                     // Total value for the item, e.g. "1.00" Required: true
+	Unit           string         `json:"unit,omitempty"`            // Enum: "szt" - "kg", etc.
+	DiscountMarkup DiscountMarkup `json:"discount_markup,omitempty"` // Optional, e.g. "0.00"
+	Code           string         `json:"code,omitempty"`            // Optional, e.g. "1234567890123" Can be set only if Description is not Set
+	Description    string         `json:"description,omitempty"`     // Optional, e.g. "Sample Item"
 }
 
 func (a *Article) Validate() error {
