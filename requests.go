@@ -17,10 +17,10 @@ type DiscountMarkup struct {
 }
 
 type Summary struct {
-	DiscountMarkup DiscountMarkup `json:"discount_markup,omitempty"`
-	Total          string         `json:"total,omitempty"`
-	PayIn          string         `json:"pay_in,omitempty"`
-	Change         string         `json:"change,omitempty"`
+	DiscountMarkup `json:"discount_markup,omitempty"`
+	Total          string `json:"total,omitempty"`
+	PayIn          string `json:"pay_in,omitempty"`
+	Change         string `json:"change,omitempty"`
 }
 
 type EDocument struct {
