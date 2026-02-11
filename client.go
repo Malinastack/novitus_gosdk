@@ -2,8 +2,10 @@ package novitus_gosdk
 
 import (
 	"fmt"
-	"resty.dev/v3"
+	"strings"
 	"time"
+
+	"resty.dev/v3"
 )
 
 type NovitusClient struct {
@@ -186,7 +188,7 @@ func (n *NovitusClient) SendDocument(documentType string, document Document) (Se
 		return SendDocumentResponse{}, fmt.Errorf("failed to send document: %w", err)
 	}
 	if res.IsError() {
-		return SendDocumentResponse{}, fmt.Errorf("error sending document: %s", errorResponse.Exception.Description)
+		return SendDocumentResponse{}, fmt.Errorf("error sending document: %s, %s", errorResponse.Exception.Description, strings.Join(errorResponse.Exception.Errors, ", "))
 	}
 	return sendDocumentResponse, nil
 }
