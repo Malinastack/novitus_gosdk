@@ -1,8 +1,9 @@
 package novitus_gosdk
 
 type Error struct {
-	Code        int    `json:"code"`
-	Description string `json:"description"`
+	Code        int      `json:"code"`
+	Description string   `json:"description"`
+	Errors      []string `json:"errors"`
 }
 
 type Request struct {
